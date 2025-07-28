@@ -1,6 +1,8 @@
 # 🌦️ Projeto de Estudo: Monitor Ambiental com Raspberry Pi
 
-![Dashboard](https://github.com/phsprogramador/weatherlog/blob/main/public/img/screenshot.png)
+![Dashboard](https://github.com/phsprogramador/weatherlog/blob/main/public/img/screenshot_index.png)
+
+![Dashboard](https://github.com/phsprogramador/weatherlog/blob/main/public/img/screenshot_management.png)
 
 
 ## 📌 Objetivo
