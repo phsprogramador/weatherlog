@@ -109,6 +109,7 @@ node server.js
 ## 🔮 Melhorias Futuras
 
 - Adicionar anemometro
+- Adicionar pluviometro
 - Adicionar histórico sazonal  
 
 ## 📄 Licença
