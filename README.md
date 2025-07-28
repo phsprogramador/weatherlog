@@ -114,4 +114,4 @@ node server.js
 
 ## 📄 Licença
 
-MIT License - Consulte o arquivo LICENSE para detalhes.
+MIT License
