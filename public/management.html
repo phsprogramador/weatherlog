@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Dados</title>
+    <link rel="icon" type="image/x-icon" href="/img/fav.ico">
+    <link rel="stylesheet" type="text/css" href="css/all.min.css"  />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"  />
+    <link rel="stylesheet" type="text/css" href="css/styles.css"  />
+    <script src="js/fonticons.js"></script>
+</head>
+<body class="bg-dark text-white">    
+    <header class="bg-dark text-white shadow-sm sticky-top">
+        <nav class="navbar navbar-expand-md">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" href="#">
+                    <i class="fas fa-database me-2"></i>
+                    <span>Monitor Ambiental</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarMenu">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i> Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="management.html"><i class="fas fa-cog me-1"></i> Gerenciamento</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2 mb-0">
+                <i class="fas fa-database me-2"></i>Gerenciamento de Dados
+            </h1>
+            <div class="badge bg-info text-dark">v2.1.3</div>
+        </div>
+        
+        <div class="card border-primary mb-4 shadow-lg">
+            <div class="card-header bg-primary bg-opacity-10 border-primary">
+                <h2 class="h5 mb-0">
+                    <i class="fas fa-file-export me-2"></i>Backup do Banco de Dados
+                </h2>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Gere um backup completo do banco de dados atual para arquivamento ou recuperação.</p>
+                
+                <div class="d-flex flex-column flex-md-row gap-3">
+                    <button id="generate-backup" class="btn btn-primary flex-grow-1">
+                        <i class="fas fa-file-export me-2"></i>Gerar Backup Completo
+                    </button>
+                    
+                    <button class="btn btn-outline-secondary flex-grow-1" data-bs-toggle="collapse" data-bs-target="#backupInfo">
+                        <i class="fas fa-info-circle me-2"></i>Instruções
+                    </button>
+                </div>
+                
+                <div class="collapse mt-3" id="backupInfo">
+                    <div class="alert alert-info">
+                        <h3 class="h6"><i class="fas fa-question-circle me-2"></i>Como usar:</h3>
+                        <ul class="mb-0">
+                            <li>Backups completos incluem todos os dados históricos</li>
+                            <li>Arquivos são salvos no formato SQLite padrão</li>
+                            <li>Backups semestrais são gerados automaticamente</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div id="backup-status" class="mt-3 alert alert-dismissible fade show d-none" role="alert">
+                    <span id="backup-message"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card border-success mb-4 shadow-lg">
+            <div class="card-header bg-success bg-opacity-10 border-success">
+                <h2 class="h5 mb-0">
+                    <i class="fas fa-archive me-2"></i>Arquivos de Backup
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover" id="archive-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-file-alt me-1"></i> Nome do Arquivo</th>
+                                <th><i class="fas fa-calendar me-1"></i> Data</th>
+                                <th><i class="fas fa-weight-hanging me-1"></i> Tamanho</th>
+                                <th><i class="fas fa-cog me-1"></i> Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="archive-list">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card border-warning shadow-lg">
+            <div class="card-header bg-warning bg-opacity-10 border-warning">
+                <h2 class="h5 mb-0">
+                    <i class="fas fa-broom me-2">Manutenção do Banco de Dados</i>
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <h3 class="h6"><i class="fas fa-clock-rotate-left me-2"></i>Expurgo de Dados</h3>
+                        <p class="text-muted small">Remova automaticamente registros antigos para otimizar o desempenho.</p>
+                        
+                        <div class="d-flex flex-column flex-md-row gap-3">
+                            <button id="manual-purge" class="btn btn-warning flex-grow-1">
+                                <i class="fas fa-broom me-2"></i>Executar Expurgo
+                            </button>
+                            
+                            <button class="btn btn-outline-secondary flex-grow-1" data-bs-toggle="collapse" data-bs-target="#purgeInfo">
+                                <i class="fas fa-info-circle me-2"></i>Detalhes
+                            </button>
+                        </div>
+                        
+                        <div class="collapse mt-3" id="purgeInfo">
+                            <div class="alert alert-warning">
+                                <h4 class="h6"><i class="fas fa-exclamation-triangle me-2"></i>Atenção:</h4>
+                                <ul class="mb-0">
+                                    <li>Esta ação remove permanentemente dados antigos</li>
+                                    <li>Por padrão, mantém os últimos 6 meses de dados</li>
+                                    <li>Backups são recomendados antes da execução</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h3 class="h6"><i class="fas fa-database me-2"></i>Otimização</h3>
+                        <p class="text-muted small">Compacte o banco de dados para melhorar o desempenho.</p>
+                        <button id="optimize-db" class="btn btn-outline-info w-100">
+                            <i class="fas fa-compress-alt me-2"></i>Otimizar Banco de Dados
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="purge-status" class="mt-3 alert alert-dismissible fade show d-none" role="alert">
+                    <span id="purge-message"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    </main>    
+    <footer class="bg-dark text-muted py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="h6"><i class="fas fa-info-circle me-2"></i>Sistema de Monitoramento</h3>
+                    <p class="small">Versão 2.1.3 - Desenvolvido para Raspberry Pi</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="small mb-0">Última atualização: <span id="last-update"></span></p>
+                </div>
+            </div>
+        </div>
+    </footer>    
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="management.js"></script>
+    
+    <script>        
+        document.getElementById('last-update').textContent = new Date().toLocaleDateString('pt-BR');
+    </script>
+</body>
+</html>
