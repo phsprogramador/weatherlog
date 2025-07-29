@@ -68,8 +68,6 @@ async function readSensorData() {
   }
 }
 
-[archiveDir, tempDir].forEach(dir => { if (!fs.existsSync(dir)) fs.mkdirSync(dir);});
-
 app.use((req, res, next) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');
@@ -165,16 +163,19 @@ app.get('/api/extremes', (req, res) => {
 });
 
 app.get('/api/generate-backup', (req, res) => {
+
     const now = new Date();
-    const filename = `backup_${now.toISOString().replace(/[:.]/g, '-')}.db`;
-    const tempFilePath = path.join(tempDir, filename);    
+    const gmt = new Date(now.getTime() - 3 * 60 * 60 * 1000);
+    const filename = `backup_${gmt.toISOString().replace(/-/g, '').replace(/:/g, '').replace(/T/, '-').split('.')[0]}.db`;
+
+    const tempFilePath = path.join(archiveDir, filename);
     
     fs.copyFile(dbPath, tempFilePath, (err) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
+        if (err) { return res.status(500).json({ error: err.message }); }        
         res.json({ filename });
     });
+
+    [archiveDir, tempDir].forEach(dir => { if (!fs.existsSync(dir)) fs.mkdirSync(dir);});
 });
 
 app.get('/api/download-archive/:filename', (req, res) => {

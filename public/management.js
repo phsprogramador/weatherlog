@@ -10,16 +10,45 @@ async function loadArchiveList() {
         const response = await fetch('/api/list-archives');
         const archives = await response.json();
         const list = document.getElementById('archive-list');
-        
-        list.innerHTML = archives.map(archive => `
-            <div class="archive-item">
-                <span>${archive.name} (${archive.size} MB)</span>
-                <div>
-                    <button onclick="downloadArchive('${archive.name}')">Download</button>
-                    <button onclick="deleteArchive('${archive.name}')">Excluir</button>
-                </div>
-            </div>
-        `).join('');
+
+        list.innerHTML = archives.map(archive => {
+            const name = archive.name;
+            const size = parseFloat(archive.size || 0).toFixed(2);
+
+            const match = name.match(/backup_(\d{8})-(\d{6})/);
+            let formattedDate = 'Desconhecida';
+
+            if (match) {
+                const datePart = match[1]; // YYYYMMDD
+                const timePart = match[2]; // HHMMSS
+
+                const year = datePart.substring(0, 4);
+                const month = datePart.substring(4, 6);
+                const day = datePart.substring(6, 8);
+
+                const hour = timePart.substring(0, 2);
+                const minute = timePart.substring(2, 4);
+                const second = timePart.substring(4, 6);
+
+                formattedDate = `${day}/${month}/${year} ${hour}:${minute}:${second}`;
+            }
+
+            return `
+                <tr>
+                    <td>${name}</td>
+                    <td>${formattedDate}</td>
+                    <td>${size} MB</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary me-1" onclick="downloadArchive('${name}')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteArchive('${name}')">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
     } catch (error) {
         console.error('Erro ao carregar arquivos:', error);
     }
