@@ -53,11 +53,11 @@ async function readSensorData() {
     const data = await bme280.readSensorData();
     const { temperature_C, humidity, pressure_hPa } = data;
 
-    let adjustedPressure = await adjustToSeaLevel(pressure_hPa, temperature_C);    
+    let adjustedPressure = await adjustToSeaLevel(pressure_hPa, temperature_C);
 
     db.run(
       'INSERT INTO sensor_data (temperature, humidity, pressure, timestamp) VALUES (?, ?, ?, strftime("%Y-%m-%d %H:%M:00", "now", "localtime"))',
-      [temperature_C, humidity, adjustedPressure],
+      [temperature_C.toFixed(2), humidity.toFixed(2), adjustedPressure.toFixed(2)],
       (err) => {
         if (err) console.error('Erro ao salvar dados:', err);
         else console.log('Dados salvos:', { temperature_C, humidity, adjustedPressure });
@@ -74,6 +74,8 @@ app.use((req, res, next) => {
   res.setHeader('Expires', '0');
   next();
 });
+
+app.use('/api/download-archive', express.static(archiveDir, { etag: false, lastModified: false, cacheControl: false, maxAge: 0 }));
 
 app.get('/api/data', (req, res) => {
   db.all(
@@ -180,14 +182,27 @@ app.get('/api/generate-backup', (req, res) => {
 
 app.get('/api/download-archive/:filename', (req, res) => {
     const filename = req.params.filename;
-    const filePath = path.join(req.query.delete ? tempDir : archiveDir, filename);
-    
-    res.download(filePath, filename, (err) => {
-        if (!err && req.query.delete) {            
-            fs.unlink(filePath, (unlinkErr) => {
-                if (unlinkErr) console.error('Erro ao excluir arquivo temporário:', unlinkErr);
-            });
+    const dir = req.query.delete ? tempDir : archiveDir;
+    const filePath = path.join(dir, filename);
+
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            console.error('Arquivo não encontrado:', filePath);
+            return res.status(404).send('Arquivo não encontrado');
         }
+
+        res.download(filePath, filename, (err) => {
+            if (err) {
+                console.error('Erro ao fazer download:', err);
+                return res.sendStatus(500);
+            }
+
+            if (req.query.delete) {
+                fs.unlink(filePath, (unlinkErr) => {
+                    if (unlinkErr) console.error('Erro ao excluir arquivo temporário:', unlinkErr);
+                });
+            }
+        });
     });
 });
 

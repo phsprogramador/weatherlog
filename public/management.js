@@ -88,19 +88,21 @@ async function executeManualPurge() {
 }
 
 async function downloadArchive(filename) {
-    try {        
+    try {
+        const url = `/api/download-archive/${filename}?delete=true&_=${Date.now()}`;
         const link = document.createElement('a');
-        link.href = `/api/download-archive/${filename}?delete=true`;
+        link.href = url;
         link.download = filename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-
-        setTimeout(loadArchiveList, 2500);
+        
+        setTimeout(loadArchiveList, 2500); 
     } catch (error) {
         console.error('Erro no download:', error);
     }
 }
+
 
 async function deleteArchive(filename) {
     if (confirm(`Tem certeza que deseja excluir permanentemente ${filename}?`)) {
